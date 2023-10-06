@@ -40,6 +40,13 @@ sources:
         # the following rule, should do the trick
         pattern: ">0.1"
 
+  epinio-chart:
+    kind: helmchart
+    name: Get latest Epinio Helm chart version
+    spec:
+      url: https://epinio.github.io/helm-charts/
+      name: epinio
+
   epinioSubVersion:
     name: Get latest Epinio version
     kind: githubrelease
@@ -75,36 +82,26 @@ targets:
       matchpattern: 'https://github.com/epinio/epinio/releases/download/(.*)/'
       replacepattern: 'https://github.com/epinio/epinio/releases/download/{{ source "epinio" }}/'
     scmid: default
-    sourceid: epinio
+    disablesourceinput: true
 
   epinio-version:
     name: 'Update Epinio Version Information'
     kind: file
-    sourceid: epinio
+    disablesourceinput: true
     spec:
       file: docs/installation/install_epinio_cli.md
       matchpattern: 'Epinio Version: (.*)'
       replacepattern: 'Epinio Version: {{ source "epinio" }}'
     scmid: default
 
-  ep-on-rd-download-url:
-    name: 'Update Helm chart URL'
-    kind: file
-    spec:
-      file: docs/installation/other_inst_scenarios/install_epinio_on_rancher_desktop.md
-      matchpattern: '\(https://github.com/epinio/helm-charts/releases/tag/epinio-(.*)\)'
-      replacepattern: '\(https://github.com/epinio/helm-charts/releases/tag/epinio={{ source "epinio" }}\)'
-    scmid: default
-    sourceid: epinio
-
   ep-on-rd-epinio-version:
     name: 'Update Epinio Version for EP on RD'
     kind: file
-    sourceid: epinio
+    disablesourceinput: true
     spec:
       file: docs/installation/other_inst_scenarios/install_epinio_on_rancher_desktop.md
-      matchpattern: '\[epinio helm chart (.*)\]'
-      replacepattern: '\[epinio helm chart {{ source "epinio" }}\]'
+      matchpattern: '\[epinio helm chart (.*)\]\(https://github.com/epinio/helm-charts/releases/tag/epinio-(.*)\)'
+      replacepattern: '[epinio helm chart {{ source "epinio-chart" }}](https://github.com/epinio/helm-charts/releases/tag/epinio-{{ source "epinio-chart" }})'
     scmid: default
 
   # Required yarn to be installed
